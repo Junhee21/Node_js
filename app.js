@@ -9,7 +9,7 @@ app.use(express.urlencoded({
   extended: true
 }));
 app.use(cors());
-app.use('/static', express.static('public')); 
+app.use('/static', express.static('public'));
 
 app.listen(port, () => console.log(`Server up and running on port ${port}.`));
 
@@ -17,8 +17,9 @@ const db = require("./models");
 const Form = db.Form
 const FormQuestion = db.FormQuestion
 const FormQuestionOption = db.FormQuestionOption
+const FormQuestionResult = db.FormQuestionResult
 
-app.post("/form/submit", async (req, res) => {
+app.post("/form/create", async (req, res) => {
   await Form.create({
     id: req.body.uuid,
     title: req.body.title,
@@ -41,6 +42,18 @@ app.post("/form/submit", async (req, res) => {
   })
 })
 
+app.post("/form/submit", async (req, res) => {
+  await req.body.map((obj) => {
+    if (obj.questionId != 0) {
+      FormQuestionResult.create({
+        FormQuestionId: obj.questionId,
+        id: obj.resultId,
+        content: obj.result
+      })
+    }
+  })
+})
+
 app.get("/form/all", async (req, res) => {
   const Forms = await Form.findAll({
     include: [{
@@ -48,5 +61,20 @@ app.get("/form/all", async (req, res) => {
       include: FormQuestionOption
     }]
   })
-  res.json({Forms:Forms})
+  res.json({ Forms: Forms })
+})
+
+app.get("/form/result", async (req, res) => {
+  const form = await Form.findOne({
+    where: { id: req.query.formId },
+    include: [{
+      model: FormQuestion,
+      include: [{
+        model: FormQuestionOption
+      },{
+        model: FormQuestionResult
+      }]
+    }]
+  })
+  res.json({ form: form })
 })
