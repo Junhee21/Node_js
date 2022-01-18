@@ -10,7 +10,6 @@ app.use(express.urlencoded({
 }));
 app.use(cors());
 app.use('/static', express.static('public'));
-app.use('/healthcheck', require('express-healthcheck')());
 
 app.listen(port, () => console.log(`Server up and running on port ${port}.`));
 
@@ -19,6 +18,12 @@ const Form = db.Form
 const FormQuestion = db.FormQuestion
 const FormQuestionOption = db.FormQuestionOption
 const FormQuestionResult = db.FormQuestionResult
+
+app.get('/healthCheck', function(req, res){
+	res.writeHead(200, { "Content-Type": "text/html" });
+	res.write("Health Check Page");
+	res.end();
+});
 
 app.post("/form/create", async (req, res) => {
   await Form.create({
