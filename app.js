@@ -10,6 +10,7 @@ app.use(express.urlencoded({
 }));
 app.use(cors());
 app.use('/static', express.static('public'));
+app.use('/healthcheck', require('express-healthcheck')());
 
 app.listen(port, () => console.log(`Server up and running on port ${port}.`));
 
