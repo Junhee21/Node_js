@@ -13,8 +13,3 @@ app.use('/static', express.static('public'));
 app.listen(port, () => console.log(`Server up and running on port ${port}.`));
 
 require('./src/routes/form.routes')(app);
-app.get('/healthcheck', function(req, res){
-	res.writeHead(200, { "Content-Type": "text/html" });
-	res.write("Health Check Page");
-	res.end();
-});

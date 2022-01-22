@@ -84,3 +84,31 @@ exports.submit = async (req, res) => {
         }
     })
 }
+
+exports.deleteForm = async(req, res) => {
+    const forms = await Form.findAll({
+        where: {id: req.body.formId},
+        include: [{
+            model: FormQuestion,
+            include: [{
+                model: FormQuestionOption
+            }, {
+                model: FormQuestionResult
+            }]
+        }]
+
+    })
+    await forms.map(form => {
+        Form.destroy({where: {id: form.id}});
+        form.FormQuestions.map(question => {
+            FormQuestion.destroy({where: {id: question.id}});
+            question.FormQuestionOptions.map(option => {
+                FormQuestionOption.destroy({where: {id: option.id}});
+            });
+            question.FormQuestionResults.map(result => {
+                FormQuestionResult.destroy({where: {id: result.id}});
+            })
+        })
+    })
+    return (res.json({message: "success"}));
+}

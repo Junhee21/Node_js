@@ -32,7 +32,7 @@ exports.decodeHelper = async (req) => {
   console.log('pass this..??', token);
 
   const verifyPromise = () => new Promise(function(resolve, reject){
-    jwt.verify(token, config.secret, options, function(err, decoded){
+    jwt.verify(token, secret, options, function(err, decoded){
       if (err){
         reject(err)
         return  
